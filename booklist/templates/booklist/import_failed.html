@@ -1,10 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'booklist/base.html' %}
+
+{% block content %}
+
+    {% if error_message %}
+        <strong>Error:<br></strong>
+        {{error_message}}<br><br><br>
+    {% endif %}
+    <div>
+        <strong>Menu:<br></strong>
+        <li>
+            <a href="{% url 'booklist:index' %}" class="text-dark">go home-page</a><br>
+        </li>
+        <li>
+            <a href="{% url 'booklist:books_import' %}" class="text-dark">Try again</a><br>
+        </li>
+    </div>
+
+{% endblock %}

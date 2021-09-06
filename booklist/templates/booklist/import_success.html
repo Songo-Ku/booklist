@@ -1,0 +1,23 @@
+{% extends 'booklist/base.html' %}
+
+{% block content %}
+
+{% if amount > 0 %}
+    <p>its great you imported completely {{amount}} of books to db</p>
+    <li>
+        <a href="{% url 'booklist:index' %}" class="btn-default"> Go to homepage</a> <br>
+    </li>
+    <li>
+        <a href="{% url 'booklist:books_import' %}" class="btn-default"> Import more books </a>
+    </li>
+
+
+{% else %}
+
+    Added {{amount}} records. Your phrase didn't match to conditions of add to db. <br>
+    Try again with other phrase.
+    <a href="{% url 'booklist:books_import' %}" class="btn-default">Import books</a>
+
+{% endif %}
+
+{% endblock %}
