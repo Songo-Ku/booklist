@@ -1,12 +1,12 @@
-from rest_framework.test import APITestCase
-from ..models import Book
-
-
-
+# from rest_framework.test import APITestCase
+# from ..models import Book
+#
+#
+#
 # class BookAPITestCase(APITestCase):
 #     def test_book_api_list_view(self):
 #         book = Book.objects.create(...)
-#         response = requests.get(
+#         response = self.client.get(
 #             'api/booklist/',
 #         )
 #         self.assertEqual(response.status_code, 200)

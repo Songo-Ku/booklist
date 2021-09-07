@@ -26,13 +26,13 @@ SECRET_KEY = 'django-insecure-a9&ukf))(ga=98l+og^9ss@(^nieetlf0@$s6eua1-n#2%n+wp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
 
 INSTALLED_APPS = [
-    'booklist.apps.BooklistConfig',
+    'booklist',
     'rest_framework',
     'django_filters',
     # -------------------------------------
@@ -81,8 +81,8 @@ WSGI_APPLICATION = 'src.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'NAME': BASE_DIR / 'db.sqlite3',
+        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
