@@ -17,6 +17,10 @@
             <a href="{% url 'booklist:book_delete' book.id %}" class="btn btn-default">Delete</a>
         {% endfor %}
     </ul>
+    <h1>
+        Remember you see not more than 50 record because here are no pagination yet.
+        If you want all records please go redirect to api views and then you can take all.
+    </h1>
 {% else %}
     <p>No books are available.</p>
 {% endif %}
