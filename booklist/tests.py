@@ -35,14 +35,16 @@ class BooksViewsTestCase(TestCase):
         self.response_book_delete = self.client.get(self.book_delete_url)
         self.response_book_add = self.client.get(self.book_add_url)
 
-
-
-
     def test_index_view_status200(self):
         self.assertEqual(self.response_index.status_code, 200)
 
     def test_index_view_proper_html(self):
         self.assertTemplateUsed(self.response_index, 'booklist/index.html')
+
+    def test_index_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.index_url).func.view_class, views.IndexView)
+
+    # -------------------------------------------------------
 
     def test_filter_search_order_view_status200(self):
         self.assertEqual(self.response_filter_search_order.status_code, 200)
@@ -50,11 +52,21 @@ class BooksViewsTestCase(TestCase):
     def test_index_view_proper_html(self):
         self.assertTemplateUsed(self.response_filter_search_order, 'booklist/filter_search.html')
 
+    def test_filter_search_ordering_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.filter_search_order_url).func.view_class, views.BookFilterSearchListView)
+
+    # ------------------------------------------------------
+
     def test_books_import_view_status200(self):
         self.assertEqual(self.response_books_import.status_code, 200)
 
     def test_books_import_view_proper_html(self):
         self.assertTemplateUsed(self.response_books_import, 'booklist/import_phrase.html')
+
+    def test_books_import_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.books_import_url).func.view_class, views.BookImportView)
+
+    # -------------------------------------------------------
 
     def test_book_detail_view_status200(self):
         self.assertEqual(self.response_book_detail.status_code, 200)
@@ -62,11 +74,21 @@ class BooksViewsTestCase(TestCase):
     def test_book_detail_view_proper_html(self):
         self.assertTemplateUsed(self.response_book_detail, 'booklist/book_detail.html')
 
+    def test_book_detail_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.book_detail_url).func.view_class, views.BookDetailView)
+
+    # -------------------------------------------------------
+
     def test_book_update_view_status200(self):
         self.assertEqual(self.response_book_update.status_code, 200)
 
     def test_book_update_view_proper_html(self):
         self.assertTemplateUsed(self.response_book_update, 'booklist/book_update_form.html')
+
+    def test_book_update_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.book_update_url).func.view_class, views.BookUpdateView)
+
+    # -------------------------------------------------------
 
     def test_book_delete_view_status200(self):
         self.assertEqual(self.response_book_delete.status_code, 200)
@@ -74,42 +96,38 @@ class BooksViewsTestCase(TestCase):
     def test_book_delete_view_proper_html(self):
         self.assertTemplateUsed(self.response_book_delete, 'booklist/delete_book.html')
 
+    def test_book_delete_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.book_delete_url).func.view_class, views.BookDeleteView)
+
+    # -------------------------------------------------------
+
     def test_book_add_view_status200(self):
         self.assertEqual(self.response_book_add.status_code, 200)
 
     def test_book_add_view_proper_html(self):
         self.assertTemplateUsed(self.response_book_add, 'booklist/book_create_form.html')
 
+    def test_book_add_view_url_is_resolved(self):
+        self.assertEquals(resolve(self.book_add_url).func.view_class, views.BookCreateView)
+
+    # -------------------------------------------------------
+
 
 class TestUrls(SimpleTestCase):
 
-    def test_index_url_is_resolved(self):
-        url = reverse('booklist:index')
-        self.assertEquals(resolve(url).func.view_class, views.IndexView)
 
-    def test_filter_search_ordering_url_is_resolved(self):
-        url = reverse('booklist:filter_search_order')
-        self.assertEquals(resolve(url).func.view_class, views.BookFilterSearchListView)
 
-    def test_books_import_url_is_resolved(self):
-        url = reverse('booklist:books_import')
-        self.assertEquals(resolve(url).func.view_class, views.BookImportView)
 
-    def test_book_detail_url_is_resolved(self):
-        url = reverse('booklist:book_detail', args=[33, ])
-        self.assertEquals(resolve(url).func.view_class, views.BookDetailView)
 
-    def test_book_add_url_is_resolved(self):
-        url = reverse('booklist:book_add')
-        self.assertEquals(resolve(url).func.view_class, views.BookCreateView)
 
-    def test_book_delete_url_is_resolved(self):
-        url = reverse('booklist:book_delete', args=[33, ])
-        self.assertEquals(resolve(url).func.view_class, views.BookDeleteView)
 
-    def test_book_update_url_is_resolved(self):
-        url = reverse('booklist:book_update', args=[33, ])
-        self.assertEquals(resolve(url).func.view_class, views.BookUpdateView)
+
+
+
+
+
+
+
 
 
 
