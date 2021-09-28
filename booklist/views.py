@@ -17,11 +17,15 @@ from .filters import BooklistFilter
 from requests import get
 from json import loads
 from .api_google_book_utils import prepare_listOfJson_to_bulk_create, url_builder
+from datetime import date
+
 # ------------------------
 
 # from django.contrib.auth.decorators import login_required
 # from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
+
+from .working_file import BooksImporter
 
 
 class IndexView(ListView):
@@ -67,6 +71,14 @@ class BookImportView(TemplateView):
 				{'error_message': 'no information about that phrase'}
 			)
 		books_to_be_created = prepare_listOfJson_to_bulk_create(response)
+
+		try:
+			books_importer = BooksImporter().run()
+		except BooksError as e:
+			return render(
+				'gowno'
+			)
+		books_importer.objects
 		try:
 			amount = len(books_to_be_created)
 		except exceptions.HTTPError as e:

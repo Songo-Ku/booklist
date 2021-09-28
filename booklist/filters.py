@@ -18,7 +18,7 @@ class BooklistFilter(django_filters.FilterSet):
             'title': ['icontains'],
             'authors_name': ['icontains'],
             'language_book': ['icontains'],
-            'created': ['gt', 'lt'],
+            'created': ['gte', 'lte'],
 
 
         }
