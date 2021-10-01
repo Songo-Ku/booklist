@@ -14,7 +14,9 @@
 
 {% else %}
 
-    Added {{amount}} records. Your phrase didn't match to conditions of add to db. <br>
+    No books added. <br>
+    Your phrase didn't match to conditions of add to db or something went wrong with criteria save in db.
+    <br>
     Try again with other phrase.
     <a href="{% url 'booklist:books_import' %}" class="btn-default">Import books</a>
 

@@ -16,16 +16,15 @@ from .filters import BooklistFilter
 # ---------------------------------------
 from requests import get
 from json import loads
-from .api_google_book_utils import prepare_listOfJson_to_bulk_create, url_builder
-from datetime import date
+from .api_google_book_utils import BooksImporterApi
+# from datetime import date
+# import datetime
 
 # ------------------------
 
 # from django.contrib.auth.decorators import login_required
 # from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
-
-from .working_file import BooksImporter
 
 
 class IndexView(ListView):
@@ -58,48 +57,21 @@ class BookImportView(TemplateView):
 		if not phrase:
 			message = 'field is empty pls input some phrase'
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
-		url = url_builder(phrase)
-		response = get(url)
-		if response.status_code != 200:
-			message = 'error inside request for books, pls try again'
-			return render(request, 'booklist/import_failed.html', {'error_message': message})
-		response = loads(response.text)
-		if not response.get('items'):
-			return render(
-				request,
-				'booklist/import_failed.html',
-				{'error_message': 'no information about that phrase'}
-			)
-		books_to_be_created = prepare_listOfJson_to_bulk_create(response)
 
 		try:
-			books_importer = BooksImporter().run()
-		except BooksError as e:
-			return render(
-				'gowno'
-			)
-		books_importer.objects
-		try:
-			amount = len(books_to_be_created)
-		except exceptions.HTTPError as e:
-			print("Error: " + str(e))
-			amount = 0
-			return amount
-		if amount > 0:
-			batch = [Book(title=row['title'],
-						  authors_name='unknown' if row['authors'] == None else row['authors'],
-						  published_date='unknown' if row['publishedDate'] == None else row['publishedDate'],
-						  language_book='unknown' if row['language'] == None else row['language'],
-						  link_book_cover='unknown' if row['link_book_cover'] == None else row['link_book_cover'],
-						  page_number=0 if row['pageCount'] == None else row['pageCount'],
-						  isbn13_number=0 if row['isbn_13'] == None else row['isbn_13'],
-						  )
-					 for row in books_to_be_created
-					 ]
-			Book.objects.bulk_create(batch)
-			return render(request, 'booklist/import_success.html', {'amount': amount})
-		message = 'No records which meet the criteria saving for db, please try again with change phrase importing'
-		return render(request, 'booklist/import_failed.html', {'error_message': message})
+			books_importer = BooksImporterApi(phrase)
+			books_importer.run()
+		except Exception as message:
+			return render(request, 'booklist/import_failed.html', {'error_message': message})
+		for i in books_importer.objects:
+			print(i.get('isbn_13'))
+		Book.objects.bulk_create(books_importer.objects)
+		return render(request, 'booklist/import_success.html', {'amount': books_importer.how_many_objects()})
+
+
+		# 	return render(request, 'booklist/import_success.html', {'amount': amount})
+		# message = 'No records which meet the criteria saving for db, please try again with change phrase importing'
+		# return render(request, 'booklist/import_failed.html', {'error_message': message})
 
 
 class BookDetailView(DetailView):
