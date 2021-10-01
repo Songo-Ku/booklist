@@ -29,11 +29,11 @@ from .working_file import BooksImporter
 
 
 class IndexView(ListView):
-    template_name = 'booklist/index.html'
-    context_object_name = 'booklist'
+	template_name = 'booklist/index.html'
+	context_object_name = 'booklist'
 
-    def get_queryset(self):
-        return Book.objects.all()
+	def get_queryset(self):
+		return Book.objects.all().order_by('-id')[:50]
 
 
 class BookFilterSearchListView(ListView):
@@ -97,9 +97,9 @@ class BookImportView(TemplateView):
 					 for row in books_to_be_created
 					 ]
 			Book.objects.bulk_create(batch)
-			# return redirect(reverse('import_success', kwargs={'amount_added': amount}))
 			return render(request, 'booklist/import_success.html', {'amount': amount})
-		return redirect(reverse('import_failed', kwargs={'amount_added': amount}))
+		message = 'No records which meet the criteria saving for db, please try again with change phrase importing'
+		return render(request, 'booklist/import_failed.html', {'error_message': message})
 
 
 class BookDetailView(DetailView):
