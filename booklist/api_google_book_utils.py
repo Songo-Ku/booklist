@@ -43,6 +43,7 @@ class BooksImporterApi:
     def __init__(self, phrase):
         self.phrase = phrase
         self.objects = []
+        self.objects_books = []
         self.data = ''
         self.url = ''
         self.error = ''
@@ -89,54 +90,35 @@ class BooksImporterApi:
             if not volume_info.get('publishedDate'):
                 continue
             publishedDate = volume_info.get('publishedDate')
-            print('publishedDate: ', publishedDate)
-
             if len(publishedDate) == 4:
-                print(' jest 4', publishedDate)
-                print('is integer ', is_intiger(publishedDate))
                 if is_intiger(publishedDate):
                     publishedDate = datetime.date(int(publishedDate), 1, 1)
-                    print('date after datetype', publishedDate)
                 else:
-                    print('to sie wyswietla bo nie jest integer')
                     continue
             elif len(publishedDate) == 7:
                 year = str.split(publishedDate, sep='-')[0]
                 month = str.split(publishedDate, sep='-')[1]
-                print('jest 7')
                 if is_intiger(year) and is_intiger(month):
                     publishedDate = datetime.date(int(year), int(month), 1)
-                    print('is integer ', is_intiger(year), is_intiger(month))
-                    print('date after datetype', publishedDate)
-
                 else:
-                    print('to sie wyswietla bo nie jest integer')
                     continue
             elif len(publishedDate) == 10:
-                print('jest 10')
                 year = str.split(publishedDate, sep='-')[0]
                 month = str.split(publishedDate, sep='-')[1]
                 day = str.split(publishedDate, sep='-')[2]
                 if is_intiger(year) and is_intiger(month) and is_intiger(day):
                     publishedDate = datetime.date(int(year), int(month), int(day))
-                    print('is integer ', is_intiger(year), is_intiger(month), is_intiger(day))
                 else:
-                    print('to sie wyswietla bo nie jest integer')
                     continue
             else:
                 continue
             isbn_13 = ''
-            print('before isbn13')
             if volume_info.get('industryIdentifiers'):
                 for identyficator_isbn in volume_info.get('industryIdentifiers'):
-                    print('wszedl w petle isbn')
                     if identyficator_isbn.get('type') == 'ISBN_13' and \
                             is_intiger(identyficator_isbn.get('identifier')):
-                        print('is integer and has isbn')
                         isbn_13 = int(identyficator_isbn.get('identifier'))
                         break
-            print('before thumbnail')
-            print(isbn_13)
             thumbnail = '' if not volume_info.get('imageLinks') else volume_info.get('imageLinks').get('thumbnail')
             print(thumbnail, ' thumbnail')
             if not volume_info.get('language'):
@@ -144,21 +126,15 @@ class BooksImporterApi:
             else:
                 language = volume_info.get('language')
             print(language, ' language')
-
-            if volume_info.get('pageCount'):
-                print('dupa dupa')
             if volume_info.get('pageCount') and is_intiger(volume_info.get('pageCount')):
                 pageCount = int(volume_info.get('pageCount'))
             else:
-                pageCount = ''
-                print('pusty string')
-            print(pageCount, ' pageCount')
+                pageCount = None
+                print('none pagecount')
             if not volume_info.get('authors'):
                 authors = ''
             else:
                 authors = volume_info.get('authors')
-            print(pageCount, 'pagecouint')
-
             book_to_add = {
                 "title": volume_info.get('title'),
                 "authors": authors,
@@ -170,5 +146,5 @@ class BooksImporterApi:
             }
             print('book to add', book_to_add, 'type ', type(book_to_add))
             self.objects.append(book_to_add)
-            print(self.objects, '  self object')
+            # print(self.objects, '  self object')
 

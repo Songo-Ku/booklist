@@ -63,9 +63,18 @@ class BookImportView(TemplateView):
 			books_importer.run()
 		except Exception as message:
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
-		for i in books_importer.objects:
-			print(i.get('isbn_13'))
-		Book.objects.bulk_create(books_importer.objects)
+		print(type(books_importer.objects))
+		for book_preparation in books_importer.objects:
+			books_importer.objects_books.append(Book(title=book_preparation['title'],
+													 authors_name=book_preparation['authors'],
+													 published_date=book_preparation['publishedDate'],
+													 isbn13_number=book_preparation['isbn_13'],
+													 page_number=book_preparation['pageCount'],
+													 language_book=book_preparation['language'],
+													 link_book_cover=book_preparation['link_book_cover'],
+													 )
+												)
+		Book.objects.bulk_create(books_importer.objects_books)
 		return render(request, 'booklist/import_success.html', {'amount': books_importer.how_many_objects()})
 
 

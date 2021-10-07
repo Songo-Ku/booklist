@@ -98,3 +98,13 @@ else:
 
 
 response.json()['items'][5].get('volumeInfo').get('pageCount')
+
+
+
+
+# trawisto vs travium
+# 2 tab:
+# mieta 100mg vs
+# wyc lisc karczocha 240 mg
+# wyc z owocow kopru 40 mgr
+# wyc z ostrzyzu dlugiego 200 mg
