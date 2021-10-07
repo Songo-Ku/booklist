@@ -132,7 +132,7 @@ class BooksImporterApi:
                 pageCount = None
                 print('none pagecount')
             if not volume_info.get('authors'):
-                authors = ''
+                authors = 'unknown'
             else:
                 authors = volume_info.get('authors')
             book_to_add = {

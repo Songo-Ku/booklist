@@ -108,3 +108,59 @@ response.json()['items'][5].get('volumeInfo').get('pageCount')
 # wyc lisc karczocha 240 mg
 # wyc z owocow kopru 40 mgr
 # wyc z ostrzyzu dlugiego 200 mg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Jeśli chodzi o minusy:
+# - debug True na produkcji
+# - brak datepickera do wybierania dat
+# - nie udało mi się zawęźić wyników wyszukiwania używając dat publikacji
+# - brak paginacji książęk
+# - wyszukiwanie po stronie API działa inaczej niż w przypadku formularza - np.
+# https://songoku.pythonanywhere.com/api/booklist/?id=&title=hobbit&authors_name=&language_book=
+# (case insensitive)
+# vs
+# https://songoku.pythonanywhere.com/filter-search-ordering/?title__icontains=hobbit&authors_name__icontains=&language_book__icontains=&created__gt=&created__lt=&ordering=
+# (case sensitive)
+# - kod niezgodny z PEP8 np za dużo zagnieżdzonych instrukcji warunkowych, kolejność importów, nazewnictwo zmiennych/funkcji np prepare_listOfJson_to_bulk_create itp.
+# - testy nie sprawdzają zbyt wiele
+# - w setUp powinno być przygotowanie do testów - nie powinno się używać klienta API w metodzie setUp
+# - bardzo dużo zakomentowanego kodu
+# - nie da się uruchomić testów (IndentationError)
+#
+# Ran 1 test in 0.000s
+#
+# FAILED (errors=1)
+

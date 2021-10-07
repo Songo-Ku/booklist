@@ -19,8 +19,6 @@ class BooklistFilter(django_filters.FilterSet):
             'authors_name': ['icontains'],
             'language_book': ['icontains'],
             'created': ['gte', 'lte'],
-
-
         }
 
     def filter_by_order(self, queryset, name, value):
