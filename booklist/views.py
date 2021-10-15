@@ -14,9 +14,9 @@ from .models import Book
 from .forms import BookModelForm
 from .filters import BooklistFilter
 # ---------------------------------------
-from requests import get
+from requests import get, exceptions
 from json import loads
-from .api_google_book_utils import prepare_listOfJson_to_bulk_create, url_builder
+from .api_google_book_utils import prepare_list_of_json_to_bulk_create, url_builder
 # ------------------------
 
 # from django.contrib.auth.decorators import login_required
@@ -66,7 +66,7 @@ class BookImportView(TemplateView):
 				'booklist/import_failed.html',
 				{'error_message': 'no information about that phrase'}
 			)
-		books_to_be_created = prepare_listOfJson_to_bulk_create(response)
+		books_to_be_created = prepare_list_of_json_to_bulk_create(response)
 		try:
 			amount = len(books_to_be_created)
 		except exceptions.HTTPError as e:

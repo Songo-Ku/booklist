@@ -10,10 +10,10 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     language_book = models.CharField(max_length=40)
     created = models.DateTimeField(auto_now_add=True, help_text="example: 2017-03-14")
-    published_date = models.CharField(max_length=40, default='unknown', help_text="example: 2017-03-14")
-    isbn13_number = models.IntegerField()
+    published_date = models.DateField(help_text="example: 2017-03-14")
+    isbn13_number = models.IntegerField(blank=True, null=True)
     authors_name = models.CharField(default='unknown', max_length=300)
-    page_number = models.IntegerField(default=0)
+    page_number = models.IntegerField(blank=True, null=True)
     link_book_cover = models.URLField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 

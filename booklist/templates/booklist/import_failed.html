@@ -3,11 +3,21 @@
 {% block content %}
 
     {% if error_message %}
-        <strong>Error:<br></strong>
+
+        <strong style="color:#C25100;">Error:</strong> <br>
         {{error_message}}<br><br><br>
+        <fieldset>
+            <form method="POST">
+                {% csrf_token %}
+                <label class="btn-default">Import title of book: </label><br>
+                <input type="text" name="phrase" class="btn btn-default">
+                <button type="submit" class="btn btn-default">Send</button>
+            </form>
+        </fieldset>
+        <br><br>
     {% endif %}
     <div>
-        <strong>Menu:<br></strong>
+        <strong style="color:#C25100;">Menu:<br></strong>
         <li>
             <a href="{% url 'booklist:index' %}" class="text-dark">go home-page</a><br>
         </li>

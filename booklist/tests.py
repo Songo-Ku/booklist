@@ -26,7 +26,7 @@ class BooksViewsTestCase(TestCase):
         self.book_update_url = reverse('booklist:book_update', args=[self.book_1.id, ])
         self.book_delete_url = reverse('booklist:book_delete', args=[self.book_1.id, ])
         self.book_add_url = reverse('booklist:book_add')
-        # ------------------
+        # -------------------------------------------------------
         self.response_index = self.client.get(self.index_url)
         self.response_filter_search_order = self.client.get(self.filter_search_order_url)
         self.response_books_import = self.client.get(self.books_import_url)
@@ -34,6 +34,8 @@ class BooksViewsTestCase(TestCase):
         self.response_book_update = self.client.get(self.book_update_url)
         self.response_book_delete = self.client.get(self.book_delete_url)
         self.response_book_add = self.client.get(self.book_add_url)
+
+    # -------------------------------------------------------
 
     def test_index_view_status200(self):
         self.assertEqual(self.response_index.status_code, 200)
@@ -77,6 +79,9 @@ class BooksViewsTestCase(TestCase):
     def test_book_detail_view_url_is_resolved(self):
         self.assertEquals(resolve(self.book_detail_url).func.view_class, views.BookDetailView)
 
+    def test_book_detail_check_values_fields(self):
+        self.assertEquals(self.book_1.title, 'test123456')
+
     # -------------------------------------------------------
 
     def test_book_update_view_status200(self):
@@ -113,9 +118,17 @@ class BooksViewsTestCase(TestCase):
     # -------------------------------------------------------
 
 
-class TestUrls(SimpleTestCase):
-
-
+def setUp(self):
+    self.client = Client()
+    self.book_1 = Book.objects.create(
+        title='test123456',
+        authors_name='test_author',
+        published_date='2017-03-14',
+        language_book='pl',
+        link_book_cover='',
+        page_number=0,
+        isbn13_number=0
+    )
 
 
 

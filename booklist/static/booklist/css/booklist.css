@@ -1,4 +1,6 @@
-
+.my-primary {
+  color: orange;
+}
 .page-header {
     background-color: #C25100;
     margin-top: 0;
