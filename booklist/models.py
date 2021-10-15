@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.validators import MaxValueValidator, MinLengthValidator
 # from django.conf import settings
 from django.urls import reverse
 import datetime
@@ -9,10 +10,10 @@ class Book(models.Model):
     # added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     language_book = models.CharField(max_length=40)
-    created = models.DateTimeField(auto_now_add=True, help_text="example: 2017-03-14")
-    published_date = models.DateField(max_length=10, help_text="example: 2017-03-14")
-    isbn13_number = models.IntegerField(null=True)
-    authors_name = models.CharField(default='unknown', max_length=300)
+    created = models.DateTimeField(auto_now_add=True)
+    published_date = models.DateField(max_length=10, help_text="example: dd/mm/yyyy")
+    isbn13_number = models.IntegerField(null=True, validators=[MaxValueValidator(9999999999999)])
+    authors_name = models.CharField(max_length=300)
     page_number = models.IntegerField(null=True, blank=True)
     link_book_cover = models.URLField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
@@ -25,12 +26,5 @@ class Book(models.Model):
 
     def get_absolute_url(self):
         return reverse("booklist:book_detail", kwargs={"id": self.id})
-
-
-
-
-
-
-
 
 

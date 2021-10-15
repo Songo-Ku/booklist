@@ -30,18 +30,24 @@ from django.http import HttpResponse, HttpResponseRedirect
 class IndexView(ListView):
 	template_name = 'booklist/index.html'
 	context_object_name = 'booklist'
+	paginate_by = 5
+	model = Book
 
 	def get_queryset(self):
-		return Book.objects.all().order_by('-id')[:50]
+		return Book.objects.all().order_by('-id')
 
 
 class BookFilterSearchListView(ListView):
 	model = Book
 	template_name = 'booklist/filter_search.html'
+	paginate_by = 5
 
 	def get_context_data(self, **kwargs):
+		_request_copy = self.request.GET.copy()
+		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
 		context = super().get_context_data(**kwargs)
 		context['filter'] = BooklistFilter(self.request.GET, queryset=self.get_queryset())
+		context['parameters'] = parameters
 		return context
 
 

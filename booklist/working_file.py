@@ -164,3 +164,24 @@ response.json()['items'][5].get('volumeInfo').get('pageCount')
 #
 # FAILED (errors=1)
 
+from django.core.paginator import Paginator
+objects = ['john', 'paul', 'george', 'ringo']
+p = Paginator(objects, 2)
+p.count
+p.num_pages
+p.page_range
+page1 = p.page(1)
+page1.object_list
+
+page2 = p.page(2)
+page2.object_list
+page2.has_next()
+page2.has_previous()
+page2.has_other_pages()
+page2.next_page_number()
+page2.previous_page_number()
+page2.start_index()
+page2.end_index()
+
+
+

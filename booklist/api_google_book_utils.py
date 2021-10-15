@@ -112,7 +112,7 @@ class BooksImporterApi:
                     continue
             else:
                 continue
-            isbn_13 = ''
+            isbn_13 = None
             if volume_info.get('industryIdentifiers'):
                 for identyficator_isbn in volume_info.get('industryIdentifiers'):
                     if identyficator_isbn.get('type') == 'ISBN_13' and \
