@@ -10,19 +10,16 @@ class Book(models.Model):
     # added_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     language_book = models.CharField(max_length=40)
-<<<<<<< HEAD
     created = models.DateTimeField(auto_now_add=True, help_text="example: 2017-03-14")
     published_date = models.DateField(help_text="example: 2017-03-14")
     isbn13_number = models.IntegerField(blank=True, null=True)
     authors_name = models.CharField(default='unknown', max_length=300)
     page_number = models.IntegerField(blank=True, null=True)
-=======
     created = models.DateTimeField(auto_now_add=True)
     published_date = models.DateField(max_length=10, help_text="example: dd/mm/yyyy")
     isbn13_number = models.IntegerField(null=True, validators=[MaxValueValidator(9999999999999)])
     authors_name = models.CharField(max_length=300)
     page_number = models.IntegerField(null=True, blank=True)
->>>>>>> 44f4f29735af525554edde251166c966b54bb304
     link_book_cover = models.URLField(null=True, blank=True)
     updated = models.DateTimeField(auto_now=True)
 

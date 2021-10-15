@@ -16,14 +16,12 @@ from .filters import BooklistFilter
 # ---------------------------------------
 from requests import get, exceptions
 from json import loads
-<<<<<<< HEAD
 from .api_google_book_utils import prepare_list_of_json_to_bulk_create, url_builder
-=======
 from .api_google_book_utils import BooksImporterApi
 # from datetime import date
 # import datetime
 
->>>>>>> 44f4f29735af525554edde251166c966b54bb304
+
 # ------------------------
 
 # from django.contrib.auth.decorators import login_required
@@ -67,7 +65,7 @@ class BookImportView(TemplateView):
 		if not phrase:
 			message = 'field is empty pls input some phrase'
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
-<<<<<<< HEAD
+
 		url = url_builder(phrase)
 		response = get(url)
 		if response.status_code != 200:
@@ -81,9 +79,7 @@ class BookImportView(TemplateView):
 				{'error_message': 'no information about that phrase'}
 			)
 		books_to_be_created = prepare_list_of_json_to_bulk_create(response)
-=======
 
->>>>>>> 44f4f29735af525554edde251166c966b54bb304
 		try:
 			books_importer = BooksImporterApi(phrase)
 			books_importer.run()
