@@ -16,7 +16,14 @@ from .filters import BooklistFilter
 # ---------------------------------------
 from requests import get, exceptions
 from json import loads
+<<<<<<< HEAD
 from .api_google_book_utils import prepare_list_of_json_to_bulk_create, url_builder
+=======
+from .api_google_book_utils import BooksImporterApi
+# from datetime import date
+# import datetime
+
+>>>>>>> 44f4f29735af525554edde251166c966b54bb304
 # ------------------------
 
 # from django.contrib.auth.decorators import login_required
@@ -27,18 +34,24 @@ from django.http import HttpResponse, HttpResponseRedirect
 class IndexView(ListView):
 	template_name = 'booklist/index.html'
 	context_object_name = 'booklist'
+	paginate_by = 5
+	model = Book
 
 	def get_queryset(self):
-		return Book.objects.all().order_by('-id')[:50]
+		return Book.objects.all().order_by('-id')
 
 
 class BookFilterSearchListView(ListView):
 	model = Book
 	template_name = 'booklist/filter_search.html'
+	paginate_by = 5
 
 	def get_context_data(self, **kwargs):
+		_request_copy = self.request.GET.copy()
+		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
 		context = super().get_context_data(**kwargs)
 		context['filter'] = BooklistFilter(self.request.GET, queryset=self.get_queryset())
+		context['parameters'] = parameters
 		return context
 
 
@@ -54,6 +67,7 @@ class BookImportView(TemplateView):
 		if not phrase:
 			message = 'field is empty pls input some phrase'
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
+<<<<<<< HEAD
 		url = url_builder(phrase)
 		response = get(url)
 		if response.status_code != 200:
@@ -67,27 +81,32 @@ class BookImportView(TemplateView):
 				{'error_message': 'no information about that phrase'}
 			)
 		books_to_be_created = prepare_list_of_json_to_bulk_create(response)
+=======
+
+>>>>>>> 44f4f29735af525554edde251166c966b54bb304
 		try:
-			amount = len(books_to_be_created)
-		except exceptions.HTTPError as e:
-			print("Error: " + str(e))
-			amount = 0
-			return amount
-		if amount > 0:
-			batch = [Book(title=row['title'],
-						  authors_name='unknown' if row['authors'] == None else row['authors'],
-						  published_date='unknown' if row['publishedDate'] == None else row['publishedDate'],
-						  language_book='unknown' if row['language'] == None else row['language'],
-						  link_book_cover='unknown' if row['link_book_cover'] == None else row['link_book_cover'],
-						  page_number=0 if row['pageCount'] == None else row['pageCount'],
-						  isbn13_number=0 if row['isbn_13'] == None else row['isbn_13'],
-						  )
-					 for row in books_to_be_created
-					 ]
-			Book.objects.bulk_create(batch)
-			return render(request, 'booklist/import_success.html', {'amount': amount})
-		message = 'No records which meet the criteria saving for db, please try again with change phrase importing'
-		return render(request, 'booklist/import_failed.html', {'error_message': message})
+			books_importer = BooksImporterApi(phrase)
+			books_importer.run()
+		except Exception as message:
+			return render(request, 'booklist/import_failed.html', {'error_message': message})
+		print(type(books_importer.objects))
+		for book_preparation in books_importer.objects:
+			books_importer.objects_books.append(Book(title=book_preparation['title'],
+													 authors_name=book_preparation['authors'],
+													 published_date=book_preparation['publishedDate'],
+													 isbn13_number=book_preparation['isbn_13'],
+													 page_number=book_preparation['pageCount'],
+													 language_book=book_preparation['language'],
+													 link_book_cover=book_preparation['link_book_cover'],
+													 )
+												)
+		Book.objects.bulk_create(books_importer.objects_books)
+		return render(request, 'booklist/import_success.html', {'amount': books_importer.how_many_objects()})
+
+
+		# 	return render(request, 'booklist/import_success.html', {'amount': amount})
+		# message = 'No records which meet the criteria saving for db, please try again with change phrase importing'
+		# return render(request, 'booklist/import_failed.html', {'error_message': message})
 
 
 class BookDetailView(DetailView):

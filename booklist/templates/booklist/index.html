@@ -3,26 +3,71 @@
 
 {% block content %}
 
-{% if message %}
-    message:
-    <p>{{message}}</p>
-{% endif %}
+    {% if message %}
+        message:
+        <p>{{message}}</p>
+    {% endif %}
 
-{% if booklist %}
+    {% if booklist %}
+        <ul>
+            {% for book in booklist %}
+                <li> <h4>{{book.title}}</h4></li>
+                <a href="{% url 'booklist:book_detail' book.id %}" class="btn btn-default">Detail</a>
+                <a href="{% url 'booklist:book_update' book.id %}" class="btn btn-default">Update</a>
+                <a href="{% url 'booklist:book_delete' book.id %}" class="btn btn-default">Delete</a>
+            {% endfor %}
+        </ul>
+
+    {% else %}
+        <p>No books are available.</p>
+    {% endif %}
+
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+
     <ul>
-        {% for book in booklist %}
-            <li> <h4>{{book.title}}</h4></li>
-            <a href="{% url 'booklist:book_detail' book.id %}" class="btn btn-default">Detail</a>
-            <a href="{% url 'booklist:book_update' book.id %}" class="btn btn-default">Update</a>
-            <a href="{% url 'booklist:book_delete' book.id %}" class="btn btn-default">Delete</a>
-        {% endfor %}
+        list of all url adresses:
+            <li>
+                filter-search-ordering/    - manual filter search
+            </li>
+            <li>
+                id/update-book/
+            </li>
+            <li>
+                id/delete-book/
+            </li>
+             <li>
+                add_new_book/
+            </li>
+            <li>
+                book/id/    - detail view of book for id
+            </li>
+            <li>
+                books_import/
+            </li>
+            <li>
+                /   - dla index
+            </li>
+        Api:
+            <li>
+                api/booklist/
+            </li>
     </ul>
-    <h1>
-        Remember you see not more than 50 record because here are no pagination yet.
-        If you want all records please go redirect to api views and then you can take all.
-    </h1>
-{% else %}
-    <p>No books are available.</p>
-{% endif %}
 
 {% endblock %}

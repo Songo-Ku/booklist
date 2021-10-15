@@ -1,15 +1,24 @@
 import django_filters
 # import django_filters.orderingfilter
 from .models import Book
+from django import forms
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
 
 
 class BooklistFilter(django_filters.FilterSet):
-
+    paginate_by = 5
     CHOICES = (
         ('ascending', 'Ascending'),
         ('descending', 'Descending'),
     )
     ordering = django_filters.ChoiceFilter(label='Ordering', choices=CHOICES, method='filter_by_order')
+
+    def filter_by_order(self, queryset, name, value):
+        expression = 'published_date' if value == 'ascending' else '-published_date'
+        return queryset.order_by(expression)
 
     class Meta:
         model = Book
@@ -18,13 +27,13 @@ class BooklistFilter(django_filters.FilterSet):
             'title': ['icontains'],
             'authors_name': ['icontains'],
             'language_book': ['icontains'],
-            'created': ['gt', 'lt'],
-
-
+            'published_date': ['gte', 'lte'],
         }
 
-    def filter_by_order(self, queryset, name, value):
-        expression = 'created' if value == 'ascending' else '-created'
-        return queryset.order_by(expression)
+        # widgets = {
+        #     'published_date': DateInput(),
+        # }
+
+
 
 
