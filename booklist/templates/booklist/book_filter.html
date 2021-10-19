@@ -13,7 +13,12 @@
         Search
       </button>
     </form>
+    {% if filterset %}
+        {{filterset}}
+    {% endif %}
 
+      <br>
+huj
     <table class="table">
         <thead>
           <tr>
@@ -28,7 +33,7 @@
             <th scope="col">go to book detail</th>
           </tr>
         </thead>
-
+    {% if filter.qs %}
       {% for book in filter.qs %}
         <tbody>
           <tr>
@@ -44,6 +49,7 @@
           </tr>
         </tbody>
       {% endfor %}
+    {% endif %}
     </table>
   </div>
 
@@ -72,5 +78,11 @@
     </a>
 </div>
 
+<br>
+this is my parameter from avail pagination:
+<br>
+<a href="?page={{ page_obj.next_page_number }}&{{ parameters }}">
+  Next
+</a>
 
 {% endblock %}

@@ -9,7 +9,7 @@ class DateInput(forms.DateInput):
 
 
 class BooklistFilter(django_filters.FilterSet):
-    paginate_by = 5
+    # paginate_by = 5
     CHOICES = (
         ('ascending', 'Ascending'),
         ('descending', 'Descending'),
@@ -33,6 +33,14 @@ class BooklistFilter(django_filters.FilterSet):
         # widgets = {
         #     'published_date': DateInput(),
         # }
+
+
+class AvailFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = Book
+        widgets = {'published_date': DateInput(), }
+        fields = ['published_date', 'title', 'authors_name', 'language_book', ]
 
 
 
