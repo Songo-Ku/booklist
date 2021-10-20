@@ -12,7 +12,7 @@ from django.views.generic import (
 )
 # ---------------------------------------
 from .models import Book
-from .forms import BookModelForm, DateInput, BookFilterSearchPagForm
+from .forms import BookModelForm, DateInput, BookFilterSearchPagForm, InputForm
 from .filters import BooklistFilter
 from .filters import AvailFilter
 # AvailFilter
@@ -279,17 +279,44 @@ class BookFilterSearchPagList(ListView):
 	pass
 
 
-class ProfileSearchView(ListView):
+class BookListViewSearchView(ListView):
 	template_name = 'booklist/book_listview_filter_search.html'
 	model = Book
+	paginate_by = 5
 	# pamiętać o Q filtrach and &
 
+	def get(self, request, *args, **kwargs):
+		print('args: ', args)
+		print('kwargs: ', kwargs)
+		print('to jest request z get : ', request)
+		return super().get(request, *args, **kwargs)
+
+	# def get_paginator(self, queryset, per_page, orphans=0,
+    #                   allow_empty_first_page=True, **kwargs):
+
 	def get_queryset(self):
-		name = self.kwargs.get('name', '')
-		object_list = self.model.objects.all()
-		if name:
-			object_list = object_list.filter(name__icontains=name)
-		return object_list
+		queryset = super().get_queryset()
+		print(queryset)
+		# title = self.kwargs.get('title', '')
+		print('to jest title z request GET get: ', self.request.GET.get('title', ''))
+		title = self.request.GET.get('title')
+		published_date_gte = self.request.GET.get('published_date_gte', '')
+		print('pub date gte: ', published_date_gte)
+		# object_list = self.model.objects.all()
+		if title:
+			object_list = queryset.filter(title__icontains=title)
+			return object_list.order_by('-pk')
+		else:
+			return queryset
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['form'] = InputForm
+		print('czyli to jest context form:   ', context['form'])
+		_request_copy = self.request.GET.copy()
+		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
+		context['parameters'] = parameters
+		return context
 
 
 

@@ -21,5 +21,8 @@ urlpatterns = [
     # path('filterview/', FilterView.as_view(filterset_class=views.F), name='filterview'), # nie ma paginacji
     path('moj_filter_with_pag/', views.MojFilterWithPag.as_view(), name='moj_filter_with_pag'),  # ale to juz nie dziala
     path('bookfiltersearchpag/', views.BookFilterSearchPag.as_view(), name='bookfiltersearchpag'),
+    path('booksearchpag/', views.BookListViewSearchView.as_view(), name='booksearchpag'),
+
+
 
 ]
