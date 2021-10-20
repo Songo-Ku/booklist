@@ -18,5 +18,18 @@ class BookModelForm(forms.ModelForm):
         }
 
 
+class BookFilterSearchPagForm(forms.ModelForm):
+    class Meta:
+        model = Book
+        fields = {
+            'title': ['icontains'],
+            'authors_name': ['icontains'],
+            'language_book': ['icontains'],
+            'published_date': ['gte', 'lte'],
+        }
+        widgets = {
+            'published_date': DateInput(),
+        }
+
 
 

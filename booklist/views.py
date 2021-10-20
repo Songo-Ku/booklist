@@ -7,11 +7,12 @@ from django.views.generic import (
 	CreateView,
 	ListView,
 	DeleteView,
-	UpdateView
+	UpdateView,
+	FormView,
 )
 # ---------------------------------------
 from .models import Book
-from .forms import BookModelForm
+from .forms import BookModelForm, DateInput, BookFilterSearchPagForm
 from .filters import BooklistFilter
 from .filters import AvailFilter
 # AvailFilter
@@ -165,10 +166,10 @@ class BookFilter(django_filters.FilterSet):
 		fields = ['published_date', 'authors_name', 'language_book', ]
 
 
-class BookFilterSearchListView(ListView):
-	model = Book
-	template_name = 'booklist/filter_book_search.html'
-	paginate_by = 5
+# class BookFilterSearchListView(ListView):
+# 	model = Book
+# 	template_name = 'booklist/filter_book_search.html'
+# 	paginate_by = 5
 	# form_class = BookFilter
 
 
@@ -182,13 +183,11 @@ class BookFilterSearchListView(ListView):
 # excpetion type emptypage
 
 
-class DateInput(forms.DateInput):
-    input_type = 'date'
-
 
 class F(django_filters.FilterSet):
 	#  co jest w tym złego ?
 	title = django_filters.CharFilter(method='my_custom_filter')
+	published_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}))
 
 	class Meta:
 		model = Book
@@ -197,9 +196,10 @@ class F(django_filters.FilterSet):
 			'title': ['icontains'],
 			'authors_name': ['icontains'],
 			'language_book': ['icontains'],
-			'published_date': ['gte', 'lte'],
+			'published_date': ['gte'],
+			# 'published_date': ['gte', 'lte'],
 		}
-		widgets = {'published_date': DateInput(), }
+		# widgets = {'published_date': DateInput(), }
 
 	def my_custom_filter(self, queryset, name, value):
 		return queryset.filter(**{name: value, })
@@ -261,8 +261,35 @@ class MojFilterWithPag(FilterView):
 	# 			'page_number': page_number,
 	# 			'message': str(e)
 	# 		})
-	#
+	# ---------------------------------------------------------
 
+
+class BookFilterSearchPag(FormView):
+	template_name = 'booklist/book_filter_search_pag.html'
+	form_class = BookFilterSearchPagForm
+	queryset = Book.objects.all()
+	# success_url = reverse_lazy('booklist:index')
+
+	# def form_valid(self, form):
+	# 	print(form.cleaned_data)
+	# 	return super().form_valid(form)
+
+
+class BookFilterSearchPagList(ListView):
+	pass
+
+
+class ProfileSearchView(ListView):
+	template_name = 'booklist/book_listview_filter_search.html'
+	model = Book
+	# pamiętać o Q filtrach and &
+
+	def get_queryset(self):
+		name = self.kwargs.get('name', '')
+		object_list = self.model.objects.all()
+		if name:
+			object_list = object_list.filter(name__icontains=name)
+		return object_list
 
 
 
