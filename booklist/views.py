@@ -328,7 +328,7 @@ class BookListViewSearchView(ListView):
 		print('dlugosc len od q_list to: ', len(q_list))
 		object_filtered = ''
 		if len(q_list) > 0:
-			object_filtered = queryset.filter(reduce(operator.and_, q_list))
+			object_filtered = queryset.filter(reduce(operator.and_, q_list)).distinct()
 			print('obj to: ', object_filtered)
 		else:
 			print('nie jest dluzszy niz 0 len od q_list')
