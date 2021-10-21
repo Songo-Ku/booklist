@@ -1,3 +1,5 @@
+from functools import reduce
+
 from django.shortcuts import (render, get_object_or_404, redirect,)
 from django.urls import reverse, reverse_lazy
 # from django.views import generic
@@ -10,15 +12,17 @@ from django.views.generic import (
 	UpdateView,
 	FormView,
 )
+import django_filters
+from django import forms
+from django.db.models import Q
+import operator
+
 # ---------------------------------------
 from .models import Book
 from .forms import BookModelForm, DateInput, BookFilterSearchPagForm, InputForm
 from .filters import BooklistFilter
 from .filters import AvailFilter
 # AvailFilter
-import django_filters
-from django import forms
-
 
 # ---------------------------------------
 from requests import get, exceptions
@@ -282,6 +286,7 @@ class BookFilterSearchPagList(ListView):
 class BookListViewSearchView(ListView):
 	template_name = 'booklist/book_listview_filter_search.html'
 	model = Book
+	form = InputForm
 	paginate_by = 5
 	# pamiętać o Q filtrach and &
 
@@ -299,15 +304,50 @@ class BookListViewSearchView(ListView):
 		print(queryset)
 		# title = self.kwargs.get('title', '')
 		print('to jest title z request GET get: ', self.request.GET.get('title', ''))
-		title = self.request.GET.get('title')
-		published_date_gte = self.request.GET.get('published_date_gte', '')
-		print('pub date gte: ', published_date_gte)
-		# object_list = self.model.objects.all()
+		q_list = []
+		title = self.request.GET.get('title', '')
 		if title:
-			object_list = queryset.filter(title__icontains=title)
-			return object_list.order_by('-pk')
+			q_list.append(Q(title__icontains=title),)
+		published_date_gte = self.request.GET.get('published_date_from', '')
+		if published_date_gte:
+			q_list.append(Q(published_date__gte=published_date_gte),)
+			print('pub date from, from, from, from: ', published_date_gte)
+		# print('pub date from, from, from, from: ', published_date_gte)
+		published_date_lte = self.request.GET.get('published_date_to', '')
+		if published_date_lte:
+			q_list.append(Q(published_date__lte=published_date_lte),)
+		authors_name = self.request.GET.get('authors_name', '')
+		if authors_name:
+			q_list.append(Q(authors_name__icontains=authors_name),)
+		language_book = self.request.GET.get('language_book', '')
+		if language_book:
+			q_list.append(Q(language_book__icontains=language_book),)
+
+
+		print('querysecik:   \n', queryset)
+		print('dlugosc len od q_list to: ', len(q_list))
+		object_filtered = ''
+		if len(q_list) > 0:
+			object_filtered = queryset.filter(reduce(operator.and_, q_list))
+			print('obj to: ', object_filtered)
 		else:
+			print('nie jest dluzszy niz 0 len od q_list')
+		if object_filtered:
+			print('object with filter Q dates and title:     \n', object_filtered)
+			return object_filtered
+		else:
+			print('nie ma object_filtered dlatego zwroci czysty queryset')
 			return queryset
+
+		# filter(fromdate__gte=form_fromdate, todate__lte=form_todate)
+		# .objects.filter(reduce(operator.and_, q_list))
+		# print('pub date gte: ', published_date_gte)
+		# object_list = self.model.objects.all()
+		# if title:
+		# 	object_list = queryset.filter(title__icontains=title)
+		# 	return object_list.order_by('-pk')
+		# else:
+		# 	return queryset
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
