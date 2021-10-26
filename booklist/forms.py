@@ -74,6 +74,7 @@ class InputForm(forms.ModelForm):
         self.fields['title'].required = False
         self.fields['authors_name'].required = False
         self.fields['language_book'].required = False
+        self.fields['title'].value = 'dupa'
         # self.fields['email'].label = "New Email Label"
 
 

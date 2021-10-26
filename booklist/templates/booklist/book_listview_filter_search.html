@@ -40,7 +40,7 @@
                   <tr>
                     <th scope="row">{{ forloop.counter }}</th>
                     <td>{{ book.title }}</td>
-                    <td>{{ book.created }}</td>
+                    <td>{{ book.created |date:"Y-m-d" }}</td>
                     <td>{{ book.language_book }}</td>
                     <td>{{ book.authors_name }}</td>
                     <td>{{ book.page_number }}</td>
