@@ -56,9 +56,7 @@ class IndexView(ListView):
 class BookListViewSearchView(ListView):
 	template_name = 'booklist/book_listview_filter_search.html'
 	model = Book
-	# form = InputForm
 	paginate_by = 5
-	# pamiętać o Q filtrach and &
 
 	def get(self, request, *args, **kwargs):
 		print('args: ', args)
@@ -66,62 +64,35 @@ class BookListViewSearchView(ListView):
 		print('to jest request z get : ', request)
 		return super().get(request, *args, **kwargs)
 
-	# def get_paginator(self, queryset, per_page, orphans=0,
-    #                   allow_empty_first_page=True, **kwargs):
-
 	def get_queryset(self):
 		# search: https://learndjango.com/tutorials/django-search-tutorial
 		queryset = super().get_queryset()
-		print(queryset)
-		# title = self.kwargs.get('title', '')
+		# print(queryset)
 		print('to jest title z request GET get: ', self.request.GET.get('title', ''))
-		q_list = []
+		query = Q()
 		title = self.request.GET.get('title', '')
 		if title:
-			q_list.append(Q(title__icontains=title),)
+			query &= Q(title__icontains=title)
 		published_date_gte = self.request.GET.get('published_date_from', '')
 		if published_date_gte:
-			q_list.append(Q(published_date__gte=published_date_gte),)
-			print('pub date from, from, from, from: ', published_date_gte)
-		# print('pub date from, from, from, from: ', published_date_gte)
+			query &= Q(published_date__gte=published_date_gte)
 		published_date_lte = self.request.GET.get('published_date_to', '')
 		if published_date_lte:
-			q_list.append(Q(published_date__lte=published_date_lte),)
+			query &= Q(published_date__lte=published_date_lte)
 		authors_name = self.request.GET.get('authors_name', '')
 		if authors_name:
-			q_list.append(Q(authors_name__icontains=authors_name),)
+			query &= Q(authors_name__icontains=authors_name)
 		language_book = self.request.GET.get('language_book', '')
 		if language_book:
-			q_list.append(Q(language_book__icontains=language_book),)
-		print('querysecik:   \n', queryset)
-		print('dlugosc len od q_list to: ', len(q_list))
-		object_filtered = ''
-		if len(q_list) > 0:
-			object_filtered = queryset.filter(reduce(operator.and_, q_list)).distinct()
-			print('obj to: ', object_filtered)
-		else:
-			print('nie jest dluzszy niz 0 len od q_list')
-		if object_filtered:
-			print('object with filter Q dates and title:     \n', object_filtered)
-			return object_filtered
-		else:
-			print('nie ma object_filtered dlatego zwroci czysty queryset')
-			return queryset
-
-		# filter(fromdate__gte=form_fromdate, todate__lte=form_todate)
-		# .objects.filter(reduce(operator.and_, q_list))
-		# print('pub date gte: ', published_date_gte)
-		# object_list = self.model.objects.all()
-		# if title:
-		# 	object_list = queryset.filter(title__icontains=title)
-		# 	return object_list.order_by('-pk')
-		# else:
-		# 	return queryset
+			query &= Q(language_book__icontains=language_book)
+		# print('querysecik before filtered field added to filter:   \n', queryset)
+		# print('to jest queryset: \n', queryset.filter(query))
+		return queryset.filter(query)
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		form_dict = {}
-		print('czyli to jest context object_list:   ', context['object_list'], '\n i page obj: \n', context['page_obj'])
+		# print('czyli to jest context object_list:   ', context['object_list'], '\n i page obj: \n', context['page_obj'])
 		title = self.request.GET.get('title', '')
 		if title:
 			form_dict.update(title=title)
@@ -137,28 +108,13 @@ class BookListViewSearchView(ListView):
 		language_book = self.request.GET.get('language_book', '')
 		if language_book:
 			form_dict.update(language_book=language_book)
-		if len(form_dict) > 0:
-			context['form'] = InputForm(initial=form_dict)
-		else:
-			context['form'] = InputForm
+		context['form'] = InputForm(initial=form_dict)
 		_request_copy = self.request.GET.copy()
 		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
 		context['parameters'] = parameters
-
 		return context
 
 
-
-
-
-
-
-
-
-
-
-
-# tu juz dzialajce stary kod
 # ------------------------------------------------------------------------------
 class BookImportView(TemplateView):
 	template_name = 'booklist/import_phrase.html'
@@ -172,7 +128,7 @@ class BookImportView(TemplateView):
 		if not phrase:
 			message = 'field is empty pls input some phrase'
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
-
+		prepare_list_of_json_to_bulk_create
 		url = url_builder(phrase)
 		response = get(url)
 		if response.status_code != 200:
@@ -220,23 +176,6 @@ class BookDetailView(DetailView):
 	def get_object(self):
 		id_ = self.kwargs.get("id")
 		return get_object_or_404(Book, id=id_)
-
-# def get_queryset(self):
-# 	print(self.kwargs.get("pk"))
-# 	return Book.objects.filter(id=pk)
-
-
-    # Book.objects.filter(pub_date__lte=timezone.now()).exclude(
-    #     choice__choice_text__isnull=True).order_by('-pub_date')[:10]
-
-   #  def get_context_data(self, **kwargs):
-   #      context = super().get_context_data(**kwargs)
-   #      author = context['object']
-   #      print(author.id)
-   #      context['books'] = Book.objects.filter(author__id=author.id)
-   #      if author.id:
-   #          context['personal_description'] = AuthorDescription.objects.get(author__id=author.id)
-   #      return context
 
 
 class BookCreateView(CreateView):
