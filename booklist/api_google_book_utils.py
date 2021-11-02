@@ -110,6 +110,11 @@ def is_intiger(num):
     except ValueError:
         return False
 
+def spliter_list_into_stings(object_list):
+    # https://stackoverflow.com/questions/4998629/split-string-with-multiple-delimiters-in-python
+    if len(object_list) > 1:
+        str.split(object_list, sep=[',', ';'])
+
 
 class BooksImporterApi:
     def __init__(self, phrase):
@@ -155,14 +160,26 @@ class BooksImporterApi:
 
     def data_items_exist_checker(self):
         counter = 0
-        if not self.data.get('items'):
-            return NoDataApiError('Data delivered are wrong')
+        # ta czesc jest sprawdzona w glownym programie i jesli nie ma self.data.get.items to nie wywoluje klasu
+        # if not self.data.get('items', ''):
+        #     print('noo items, no books, return is empty')
+        #     self.objects = []
+        #     return
+
+
+
+        # Kamil potrzebuje usystematyzowac nazewnictwo, zmiennych klas, parametrow, atrybutów, argumentow funkcji etc.
+        # czy to jest ok industryIdentifiers jako zmienna ktora przechowuje wartosc slownika
+        # Kamil czy to ma sens? jak to polaczyc z dziennikiem logów albo błędów?
+        # if not self.data.get('items'):
+        #     return NoDataApiError('Data delivered are wrong')
         for book in self.data.get('items'):
             counter += 1
-            volume_info = book['volumeInfo']
-            if not volume_info.get('publishedDate'):
+            publishedDate = book.get("volumeInfo", {}).get('publishedDate', '')
+
+            # czy da sie tutaj zastosowac konstrukcje z elif zeby to polaczyc w 1 ifa ?
+            if not publishedDate:
                 continue
-            publishedDate = volume_info.get('publishedDate')
             if len(publishedDate) == 4:
                 if is_intiger(publishedDate):
                     publishedDate = datetime.date(int(publishedDate), 1, 1)
@@ -171,6 +188,7 @@ class BooksImporterApi:
             elif len(publishedDate) == 7:
                 year = str.split(publishedDate, sep='-')[0]
                 month = str.split(publishedDate, sep='-')[1]
+
                 if is_intiger(year) and is_intiger(month):
                     publishedDate = datetime.date(int(year), int(month), 1)
                 else:
@@ -185,40 +203,66 @@ class BooksImporterApi:
                     continue
             else:
                 continue
-            isbn_13 = None
-            if volume_info.get('industryIdentifiers'):
-                for identyficator_isbn in volume_info.get('industryIdentifiers'):
-                    if identyficator_isbn.get('type') == 'ISBN_13' and \
-                            is_intiger(identyficator_isbn.get('identifier')):
-                        isbn_13 = int(identyficator_isbn.get('identifier'))
+            volume_info = book.get("volumeInfo", '')
+            if not volume_info:
+                continue
+            industryIdentifiers = volume_info.get('industryIdentifiers', '')
+            # sprawdzic czy to zadziala continue if not industryIdentifiers
+            if not industryIdentifiers:
+                continue
+            for type_identifier in industryIdentifiers:
+                if type_identifier.get('type') == 'ISBN_13':
+                    thumbnail = volume_info.get('imageLinks', {}).get('thumbnail', '')
+                    # ----------------------------------
+                    # spr czy jest isdecimal i czy ma 13 znakow
+                    isbn_13 = type_identifier.get('identifier', None)
+                    if not len(isbn_13) == 13 and not str.isdecimal(isbn_13):
                         break
-            thumbnail = '' if not volume_info.get('imageLinks') else volume_info.get('imageLinks').get('thumbnail')
-            print(thumbnail, ' thumbnail')
-            if not volume_info.get('language'):
-                language = ''
-            else:
-                language = volume_info.get('language')
-            print(language, ' language')
-            if volume_info.get('pageCount') and is_intiger(volume_info.get('pageCount')):
-                pageCount = int(volume_info.get('pageCount'))
-            else:
-                pageCount = None
-                print('none pagecount')
-            if not volume_info.get('authors'):
-                authors = 'unknown'
-            else:
-                authors = volume_info.get('authors')
-            book_to_add = {
-                "title": volume_info.get('title'),
-                "authors": authors,
-                "publishedDate": publishedDate,
-                "isbn_13": isbn_13,
-                "pageCount": pageCount,
-                "language": language,
-                "link_book_cover": thumbnail,
-            }
-            print('book to add', book_to_add, 'type ', type(book_to_add))
-            self.objects.append(book_to_add)
-            # print(self.objects, '  self object')
+                    thumbnail = volume_info.get('imageLinks', {}).get('thumbnail', '')
+                    print(thumbnail, ' thumbnail')
+                    language = volume_info.get('language', '')
+                    print(language, ' language')
+                    if volume_info.get('pageCount', '') and is_intiger(volume_info.get('pageCount', '')):
+                        pageCount = int(volume_info.get('pageCount'))
+                    else:
+                        pageCount = None
+                        print('none pagecount')
+                    authors = volume_info.get('authors', '')
+                    if isinstance(authors, list):
+                        pass
+
+                    # authors_name: ['dr Hardwick', 'prof. K. McCoy']
+                # --------------------------------------------------------------
+
+                    # --------------------------------------------------------------
+
+                    # print(self.objects, '  self object')
+                    book_to_add = {
+                        "title": volume_info.get('title'),
+                        "authors": authors,
+                        "publishedDate": publishedDate,
+                        "isbn_13": isbn_13,
+                        "pageCount": pageCount,
+                        "language": language,
+                        "link_book_cover": thumbnail,
+                    }
+                    print('book to add', book_to_add, 'type ', type(book_to_add))
+                    self.objects.append(book_to_add)
+                    break
+                else:
+                    continue
+
+
+
+
+            # volume_info = book['volumeInfo']
+            # if not volume_info.get('publishedDate'):
+            #     continue
+            # publishedDate = volume_info.get('publishedDate')
+
+
+
+
+
 
 

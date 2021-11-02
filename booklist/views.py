@@ -124,25 +124,22 @@ class BookImportView(TemplateView):
 		return super().get(request, *args, **kwargs)
 
 	def post(self, request, *args, **kwargs):
-		phrase = request.POST.get('phrase')
+		phrase = request.POST.get('phrase', '')
 		if not phrase:
 			message = 'field is empty pls input some phrase'
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
-		prepare_list_of_json_to_bulk_create
-		url = url_builder(phrase)
-		response = get(url)
-		if response.status_code != 200:
-			message = 'error inside request for books, pls try again'
-			return render(request, 'booklist/import_failed.html', {'error_message': message})
-		response = loads(response.text)
-		if not response.get('items'):
-			return render(
-				request,
-				'booklist/import_failed.html',
-				{'error_message': 'no information about that phrase'}
-			)
-		books_to_be_created = prepare_list_of_json_to_bulk_create(response)
-
+		# url = url_builder(phrase)
+		# response = get(url)
+		# if response.status_code != 200:
+		# 	message = 'error inside request for books, pls try again'
+		# 	return render(request, 'booklist/import_failed.html', {'error_message': message})
+		# response = loads(response.text)
+		# if not response.get('items', ''):
+		# 	return render(
+		# 		request,
+		# 		'booklist/import_failed.html',
+		# 		{'error_message': 'no information about that phrase'}
+		# 	)
 		try:
 			books_importer = BooksImporterApi(phrase)
 			books_importer.run()

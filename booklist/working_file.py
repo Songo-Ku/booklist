@@ -125,6 +125,77 @@ page2.previous_page_number()
 page2.start_index()
 page2.end_index()
 
+object_books_api = object_books_from_api.get('items', '')
+if not object_books_api:
+    print('noo items, no books, return is empty')
+    return []
+list_of_dict_proper_books = []
+counter = 0
+for book in object_books_api:
+    counter += 1
+    publishedDate = book.get("volumeInfo", {}).get('publishedDate', '')
+    # tutaj jesli jest pusty to omijamy
+    if not publishedDate:
+        continue
+    volume_info = book.get("volumeInfo", '')
+    industryIdentifiers = volume_info.get('industryIdentifiers', '')
+    if not industryIdentifiers:
+        continue
+    for type_identifier in industryIdentifiers:
+        if type_identifier.get('type') == 'ISBN_13':
+            print(' we have type of isbn 13')
+            isbn_13 = type_identifier.get('identifier')
+            print('this is value of isbn13 type from identifier:\n', isbn_13)
+
+            # tu musi byc checker ktory sprawdzi czy isbn ma 13 znakow i czy sa w nich litery i cyfry
+            thumbnail = volume_info.get('imageLinks', {}).get('thumbnail', '')
+
+            # else:
+            #     isbn_13 = 'dupa'
+
+            # 3 tu musi byc spliter listy i zamiana na str join ze splitem po , lub ;
+            book_to_add = {"title": volume_info.get('title'),
+                           "authors": volume_info.get('authors'),
+                           "publishedDate": volume_info.get('publishedDate'),
+                           "isbn_13": isbn_13,
+                           "pageCount": volume_info.get('pageCount'),
+                           "language": volume_info.get('language'),
+                           "link_book_cover": thumbnail,
+                           }
+            list_of_dict_proper_books.append(book_to_add)
+            # I need to leave from this spin of loop because I got proper record so I go to next book
+            break
+        else:
+            continue
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
