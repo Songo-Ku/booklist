@@ -20,7 +20,7 @@ import operator
 
 # ---------------------------------------
 from .models import Book
-from .forms import BookModelForm, DateInput, BookFilterSearchPagForm, InputForm
+from .forms import BookModelForm, InputForm
 from .filters import BooklistFilter
 from .filters import AvailFilter
 # AvailFilter
@@ -28,7 +28,7 @@ from .filters import AvailFilter
 # ---------------------------------------
 from requests import get, exceptions
 from json import loads
-from .api_google_book_utils import prepare_list_of_json_to_bulk_create, url_builder
+from .api_google_book_utils import url_builder
 from .api_google_book_utils import BooksImporterApi
 from django_filters.views import FilterView
 
@@ -94,20 +94,29 @@ class BookListViewSearchView(ListView):
 		form_dict = {}
 		# print('czyli to jest context object_list:   ', context['object_list'], '\n i page obj: \n', context['page_obj'])
 		title = self.request.GET.get('title', '')
-		if title:
-			form_dict.update(title=title)
-		published_date_from = self.request.GET.get('published_date_from', '')
-		if published_date_from:
-			form_dict.update(published_date_from=published_date_from)
-		published_date_to = self.request.GET.get('published_date_to', '')
-		if published_date_to:
-			form_dict.update(published_date_to=published_date_to)
-		authors_name = self.request.GET.get('authors_name', '')
-		if authors_name:
-			form_dict.update(authors_name=authors_name)
 		language_book = self.request.GET.get('language_book', '')
-		if language_book:
-			form_dict.update(language_book=language_book)
+		published_date_to = self.request.GET.get('published_date_to', '')
+		published_date_from = self.request.GET.get('published_date_from', '')
+		authors_name = self.request.GET.get('authors_name', '')
+		form_dict.update(
+			language_book=language_book,
+			title=title,
+			published_date_to=published_date_to,
+			published_date_from=published_date_from,
+			authors_name=authors_name
+		)
+# --------------------------------------------------------------------------------------------
+		# Kamil ktora forma lepsza?
+		# if title:
+		# 	form_dict.update(title=title)
+		# if published_date_from:
+		# 	form_dict.update(published_date_from=published_date_from)
+		# if published_date_to:
+		# 	form_dict.update(published_date_to=published_date_to)
+		# if authors_name:
+		# 	form_dict.update(authors_name=authors_name)
+		# if language_book:
+		# 	form_dict.update(language_book=language_book)
 		context['form'] = InputForm(initial=form_dict)
 		_request_copy = self.request.GET.copy()
 		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
@@ -118,7 +127,7 @@ class BookListViewSearchView(ListView):
 # ------------------------------------------------------------------------------
 class BookImportView(TemplateView):
 	template_name = 'booklist/import_phrase.html'
-	# awfgsgdrsgdesbdgfbgfbfgbfgbfgbgfbfgbfgbgf  keyword to test import new book in api google with no results
+	# 'awfgsgdrsgdesbdgfbgfbfgbfgbfgbgfbfgbfgbgf'  keyword to test import new book in api google with no results
 
 	def get(self, request, *args, **kwargs):
 		return super().get(request, *args, **kwargs)
@@ -128,18 +137,6 @@ class BookImportView(TemplateView):
 		if not phrase:
 			message = 'field is empty pls input some phrase'
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
-		# url = url_builder(phrase)
-		# response = get(url)
-		# if response.status_code != 200:
-		# 	message = 'error inside request for books, pls try again'
-		# 	return render(request, 'booklist/import_failed.html', {'error_message': message})
-		# response = loads(response.text)
-		# if not response.get('items', ''):
-		# 	return render(
-		# 		request,
-		# 		'booklist/import_failed.html',
-		# 		{'error_message': 'no information about that phrase'}
-		# 	)
 		try:
 			books_importer = BooksImporterApi(phrase)
 			books_importer.run()
@@ -147,22 +144,18 @@ class BookImportView(TemplateView):
 			return render(request, 'booklist/import_failed.html', {'error_message': message})
 		print(type(books_importer.objects))
 		for book_preparation in books_importer.objects:
-			books_importer.objects_books.append(Book(title=book_preparation['title'],
-													 authors_name=book_preparation['authors'],
-													 published_date=book_preparation['publishedDate'],
-													 isbn13_number=book_preparation['isbn_13'],
-													 page_number=book_preparation['pageCount'],
-													 language_book=book_preparation['language'],
-													 link_book_cover=book_preparation['link_book_cover'],
-													 )
-												)
+			books_importer.objects_books.append(
+				Book(title=book_preparation['title'],
+					 authors_name=book_preparation['authors'],
+					 published_date=book_preparation['publishedDate'],
+					 isbn13_number=book_preparation['isbn_13'],
+					 page_number=book_preparation['pageCount'],
+					 language_book=book_preparation['language'],
+					 link_book_cover=book_preparation['link_book_cover'],
+					 )
+			)
 		Book.objects.bulk_create(books_importer.objects_books)
 		return render(request, 'booklist/import_success.html', {'amount': books_importer.how_many_objects()})
-
-
-		# 	return render(request, 'booklist/import_success.html', {'amount': amount})
-		# message = 'No records which meet the criteria saving for db, please try again with change phrase importing'
-		# return render(request, 'booklist/import_failed.html', {'error_message': message})
 
 
 class BookDetailView(DetailView):

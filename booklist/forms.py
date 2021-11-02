@@ -18,20 +18,6 @@ class BookModelForm(forms.ModelForm):
         }
 
 
-class BookFilterSearchPagForm(forms.ModelForm):
-    class Meta:
-        model = Book
-        fields = {
-            'title': ['icontains'],
-            'authors_name': ['icontains'],
-            'language_book': ['icontains'],
-            'published_date': ['gte', 'lte'],
-        }
-        widgets = {
-            'published_date': DateInput(),
-        }
-
-
 class InputForm(forms.ModelForm):
     published_date_from = forms.CharField(
         widget=forms.DateInput(
@@ -68,6 +54,9 @@ class InputForm(forms.ModelForm):
             'language_book': ['icontains'],
             # 'published_date': ['gte', 'lte'],
         }
+        # widgets = {
+        #     'published_date': DateInput(),
+        # }
 
     def __init__(self, *args, **kwargs):
         super(InputForm, self).__init__(*args, **kwargs)
