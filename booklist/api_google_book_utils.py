@@ -71,11 +71,6 @@ class BooksImporterApi:
     def ask_api_for_phrase_data(self):
         url = self.url
         response = get(url)
-        # Kamil potrzebuje usystematyzowac nazewnictwo, zmiennych klas, parametrow, atrybutów, argumentow funkcji etc.
-        # czy to jest ok industryIdentifiers jako zmienna ktora przechowuje wartosc slownika
-# --------------------------------------------------------------------------------------------
-
-
         if response.status_code != 200:
             self.error = response.status_code
             if response.json().get("error").get("message") == 'Missing query.':
@@ -89,7 +84,6 @@ class BooksImporterApi:
         except:
             raise NoDataApiError('no records from that phrase please try again')
         self.data = response.json()
-
 
     def data_items_exist_checker(self):
         counter = 0

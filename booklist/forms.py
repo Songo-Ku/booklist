@@ -35,6 +35,9 @@ class InputForm(forms.Form):
         required=False,
         label='Daty do ',
     )
+    title = forms.CharField(required=False,)
+    language_book = forms.CharField(required=False,)
+    authors_name = forms.CharField(required=False,)
 
     CHOICES = (
         ('ascending_pub_date', 'rosnąco po datach publikacji'),
@@ -49,9 +52,9 @@ class InputForm(forms.Form):
         required=False,
     )
 
-    class Meta:
-        model = Book
-        fields = ['title', 'authors_name', 'language_book']
+    # class Meta:
+    #     model = Book
+    #     fields = ['title', 'authors_name', 'language_book']
         # fields = {
         #     'title': ['icontains'],
         #     'authors_name': ['icontains'],
@@ -62,10 +65,12 @@ class InputForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['title'].required = False
-        self.fields['authors_name'].required = False
-        self.fields['language_book'].required = False
-        self.fields['title'].value = 'dupa'
+        print('to sa fields w init: ')
+        print(self.fields)
+        # self.fields['title'].required = False
+        # self.fields['authors_name'].required = False
+        # self.fields['language_book'].required = False
+        # self.fields['title'].value = 'dupa'
         # self.fields['email'].label = "New Email Label"
 
 # -------------------------------------------------------------------------

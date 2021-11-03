@@ -103,17 +103,13 @@ class BookListViewSearchView(ListView):
 		context = super().get_context_data(**kwargs)
 		form_dict = {}
 		# print('czyli to jest context object_list:   ', context['object_list'], '\n i page obj: \n', context['page_obj'])
-		title = self.request.GET.get('title', '')
-		language_book = self.request.GET.get('language_book', '')
-		published_date_to = self.request.GET.get('published_date_to', '')
-		published_date_from = self.request.GET.get('published_date_from', '')
-		authors_name = self.request.GET.get('authors_name', '')
 		form_dict.update(
-			language_book=language_book,
-			title=title,
-			published_date_to=published_date_to,
-			published_date_from=published_date_from,
-			authors_name=authors_name
+			language_book=self.request.GET.get('language_book', ''),
+			title=self.request.GET.get('title', ''),
+			published_date_to=self.request.GET.get('published_date_to', ''),
+			published_date_from=self.request.GET.get('published_date_from', ''),
+			authors_name=self.request.GET.get('authors_name', ''),
+			ordering=self.request.GET.get('ordering', 'descending_pub_date'),
 		)
 		context['form'] = InputForm(initial=form_dict)
 		_request_copy = self.request.GET.copy()
