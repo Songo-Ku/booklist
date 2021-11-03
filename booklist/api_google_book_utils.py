@@ -65,8 +65,7 @@ class BooksImporterApi:
 
     def spliter_list_into_stings_with_sep(self, object_list, sep='; '):
         # https://stackoverflow.com/questions/4998629/split-string-with-multiple-delimiters-in-python
-        if len(object_list) > 1:
-            object_list = sep.join(object_list)
+        object_list = sep.join(object_list)
         return object_list
 
     def ask_api_for_phrase_data(self):
@@ -94,18 +93,6 @@ class BooksImporterApi:
 
     def data_items_exist_checker(self):
         counter = 0
-# --------------------------------------------------------------------------------------------
-
-        # ta czesc jest sprawdzona w glownym programie i jesli nie ma self.data.get.items to nie wywoluje klasu
-        # if not self.data.get('items', ''):
-        #     print('noo items, no books, return is empty')
-        #     self.objects = []
-        #     return
-# --------------------------------------------------------------------------------------------
-
-        # Kamil czy to ma sens? jak to polaczyc z dziennikiem logów albo błędów?
-        # if not self.data.get('items'):
-        #     return NoDataApiError('Data delivered are wrong')
         for book in self.data.get('items'):
             counter += 1
             publishedDate = book.get("volumeInfo", {}).get('publishedDate', '')

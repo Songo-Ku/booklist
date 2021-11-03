@@ -87,6 +87,16 @@ class BookListViewSearchView(ListView):
 			query &= Q(language_book__icontains=language_book)
 		# print('querysecik before filtered field added to filter:   \n', queryset)
 		# print('to jest queryset: \n', queryset.filter(query))
+		if self.request.GET.get('ordering'):
+			order_map = {
+				'ascending_pub_date': 'published_date',
+				'descending_pub_date': '-published_date',
+				'ascending_page_number': 'page_number',
+				'descending_page_number': '-page_number',
+				'ascending_language_book': 'language_book',
+				'descending_language_book': '-language_book',
+			}
+			queryset = queryset.order_by(order_map.get(self.request.GET.get('ordering')))
 		return queryset.filter(query)
 
 	def get_context_data(self, **kwargs):
@@ -105,18 +115,6 @@ class BookListViewSearchView(ListView):
 			published_date_from=published_date_from,
 			authors_name=authors_name
 		)
-# --------------------------------------------------------------------------------------------
-		# Kamil ktora forma lepsza?
-		# if title:
-		# 	form_dict.update(title=title)
-		# if published_date_from:
-		# 	form_dict.update(published_date_from=published_date_from)
-		# if published_date_to:
-		# 	form_dict.update(published_date_to=published_date_to)
-		# if authors_name:
-		# 	form_dict.update(authors_name=authors_name)
-		# if language_book:
-		# 	form_dict.update(language_book=language_book)
 		context['form'] = InputForm(initial=form_dict)
 		_request_copy = self.request.GET.copy()
 		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
@@ -175,7 +173,7 @@ class BookCreateView(CreateView):
 	# success_url = reverse_lazy('booklist:index')
 
 	def form_valid(self, form):
-		print(form.cleaned_data)
+		print('to jest cleaned data \n', form.cleaned_data)
 		return super().form_valid(form)
 
 	# def get_success_url(self):

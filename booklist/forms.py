@@ -18,7 +18,7 @@ class BookModelForm(forms.ModelForm):
         }
 
 
-class InputForm(forms.ModelForm):
+class InputForm(forms.Form):
     published_date_from = forms.CharField(
         widget=forms.DateInput(
             format='%Y-%m-%d',
@@ -37,37 +37,38 @@ class InputForm(forms.ModelForm):
     )
 
     CHOICES = (
-        ('ascending', 'rosnąco'),
-        ('descending', 'malejąco'),
+        ('ascending_pub_date', 'rosnąco po datach publikacji'),
+        ('descending_pub_date', 'malejąco po datach publikacji'),
+        ('ascending_language_book', 'po jezyku ksiazki malejaco'),
+        ('descending_language_book', 'po jezyku ksiazki rosnaco'),
+        ('ascending_page_number', 'po liczbie stron malejaco'),
+        ('descending_page_number', 'po liczbie stron rosnaco'),
     )
-    order = forms.CharField(
+    ordering = forms.CharField(
         widget=forms.Select(choices=CHOICES),
         required=False,
     )
 
     class Meta:
         model = Book
-        # fields = ['published_date']
-        fields = {
-            'title': ['icontains'],
-            'authors_name': ['icontains'],
-            'language_book': ['icontains'],
-            # 'published_date': ['gte', 'lte'],
-        }
-        # widgets = {
-        #     'published_date': DateInput(),
+        fields = ['title', 'authors_name', 'language_book']
+        # fields = {
+        #     'title': ['icontains'],
+        #     'authors_name': ['icontains'],
+        #     'language_book': ['icontains'],
+        #     # 'published_date': ['gte', 'lte'],
         # }
+        # widgets = {'published_date': DateInput(),}
 
     def __init__(self, *args, **kwargs):
-        super(InputForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['title'].required = False
         self.fields['authors_name'].required = False
         self.fields['language_book'].required = False
         self.fields['title'].value = 'dupa'
         # self.fields['email'].label = "New Email Label"
 
-
-
+# -------------------------------------------------------------------------
 
 # good example https://www.fullstackpython.com/django-forms-modelform-examples.html
 # from django.forms import ModelForm
