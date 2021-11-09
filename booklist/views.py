@@ -20,7 +20,7 @@ import operator
 
 # ---------------------------------------
 from .models import Book
-from .forms import BookModelForm, InputForm
+from .forms import BookModelForm, InputFormFilter, InputFormSearch
 from .filters import BooklistFilter
 from .filters import AvailFilter
 # AvailFilter
@@ -28,7 +28,7 @@ from .filters import AvailFilter
 # ---------------------------------------
 from requests import get, exceptions
 from json import loads
-from .api_google_book_utils import url_builder
+# from .api_google_book_utils import url_builder
 from .api_google_book_utils import BooksImporterApi
 from django_filters.views import FilterView
 
@@ -69,6 +69,23 @@ class BookListViewSearchView(ListView):
 		queryset = super().get_queryset()
 		# print(queryset)
 		print('to jest title z request GET get: ', self.request.GET.get('title', ''))
+		search_field = self.request.GET.get('search_field', '')
+		print('to jest search field\n', search_field)
+		if search_field:
+			query = Q()
+			query |= Q(title__icontains=search_field)
+			query |= Q(authors_name__icontains=search_field)
+			query |= Q(language_book__icontains=search_field)
+			order_search_map = {
+				'ascending_title': 'title',
+				'descending_title': '-title',
+				'ascending_page_number': 'page_number',
+				'descending_page_number': '-page_number',
+				'ascending_language_book': 'language_book',
+				'descending_language_book': '-language_book',
+			}
+			queryset = queryset.order_by(order_search_map.get(self.request.GET.get('order_search')))
+			return queryset.filter(query)
 		query = Q()
 		title = self.request.GET.get('title', '')
 		if title:
@@ -89,6 +106,8 @@ class BookListViewSearchView(ListView):
 		# print('to jest queryset: \n', queryset.filter(query))
 		if self.request.GET.get('ordering'):
 			order_map = {
+				'ascending_title': 'title',
+				'descending_title': '-title',
 				'ascending_pub_date': 'published_date',
 				'descending_pub_date': '-published_date',
 				'ascending_page_number': 'page_number',
@@ -102,6 +121,7 @@ class BookListViewSearchView(ListView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		form_dict = {}
+		form_dict_order = {}
 		# print('czyli to jest context object_list:   ', context['object_list'], '\n i page obj: \n', context['page_obj'])
 		form_dict.update(
 			language_book=self.request.GET.get('language_book', ''),
@@ -111,7 +131,13 @@ class BookListViewSearchView(ListView):
 			authors_name=self.request.GET.get('authors_name', ''),
 			ordering=self.request.GET.get('ordering', 'descending_pub_date'),
 		)
-		context['form'] = InputForm(initial=form_dict)
+		form_dict_order.update(
+			order_search=self.request.GET.get('order_search', 'ascending_title'),
+		)
+		context['form'] = InputFormFilter(initial=form_dict)
+		context['form_search'] = InputFormSearch(initial=form_dict_order)
+		if self.request.GET.get('search_field', ''):
+			context['search_field_found'] = self.request.GET.get('search_field', '')
 		_request_copy = self.request.GET.copy()
 		parameters = _request_copy.pop('page', True) and _request_copy.urlencode()
 		context['parameters'] = parameters

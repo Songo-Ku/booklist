@@ -58,6 +58,11 @@ class InputFormFilter(forms.Form):
         super().__init__(*args, **kwargs)
         print('to sa fields w init: ')
         print(self.fields)
+        # self.fields['title'].required = False
+        # self.fields['authors_name'].required = False
+        # self.fields['language_book'].required = False
+        # self.fields['title'].value = 'dupa'
+        # self.fields['email'].label = "New Email Label"
 
 
 class InputFormSearch(forms.Form):
@@ -74,8 +79,6 @@ class InputFormSearch(forms.Form):
         widget=forms.Select(choices=CHOICES),
         required=False,
     )
-
-
 # -------------------------------------------------------------------------
 
 # good example https://www.fullstackpython.com/django-forms-modelform-examples.html
