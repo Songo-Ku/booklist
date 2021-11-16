@@ -1,5 +1,6 @@
 from django import forms
 from .models import Book
+from django.core.exceptions import ValidationError
 
 
 class DateInput(forms.DateInput):
@@ -15,7 +16,29 @@ class BookModelForm(forms.ModelForm):
         )
         widgets = {
             'published_date': DateInput(),
+            # 'authors_name': CharFiled(),
         }
+
+    # def clean_isbn13_number(self):
+    #     isbn13_number = self.cleaned_data['isbn13_number']
+    #     if len(isbn13_number) == 0:
+    #         return isbn13_number
+    #     elif len(isbn13_number) == 13 and isbn13_number.isnumeric():
+    #         return isbn13_number
+    #         # jak wprowadzać dane na strnie zeby dac 3 autorow osobno
+    #         # czy kwestie raczej w backend zawrzeć, że jeśli znajdzie się ; lub przecinek to wtedy ma być kolejny autr.
+    #         # i co jeśli ksiazke sie wprowadza nowa a nie ma takiego autora jeszcze dodanego ??
+    #
+    #
+    #         # sprawdz tutaj czy ma 13 cyfr
+    #     else:
+    #         raise ValidationError("my_custom_example_url has to be in the provided data.")
+    #
+    # def clean_authors(self):
+    #     authors = self.cleaned_data['authors']
+    #     authors_list = authors.split(' ,')
+    #     # for author in authors_list:
+
 
 
 class InputFormFilter(forms.Form):

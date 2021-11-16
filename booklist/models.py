@@ -4,6 +4,7 @@ from django.core.validators import MaxValueValidator, MinLengthValidator
 # from django.conf import settings
 from django.urls import reverse
 import datetime
+from .validators import validate_geeks_mail
 
 
 class Book(models.Model):
@@ -11,7 +12,7 @@ class Book(models.Model):
     title = models.CharField(max_length=200)
     language_book = models.CharField(max_length=40)
     published_date = models.DateField(help_text="example: 2017-03-14")
-    isbn13_number = models.IntegerField(blank=True, null=True, validators=[])  # napisac alidator ktory sklada sie z 13
+    isbn13_number = models.IntegerField(blank=True, null=True, validators=[validate_geeks_mail])  # napisac alidator ktory sklada sie z 13
     # cyfr i moga byc zera
     page_number = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
