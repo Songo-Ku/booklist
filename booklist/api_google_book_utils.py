@@ -51,7 +51,7 @@ class BooksImporterApi:
     def run(self):
         # 1. get resposne from google
         self.url_builder()
-        self.ask_api_for_phrase_data()
+        self.data = self.ask_api_for_phrase_data()
         self.data_items_exist_checker()
         # 2. Parse response to objects
         # 3. return amoutn of cretaed books
@@ -70,6 +70,8 @@ class BooksImporterApi:
 
     def ask_api_for_phrase_data(self):
         url = self.url
+        # nie chcemy sie laczyc chcemy to sfabrykować
+
         response = get(url)
         if response.status_code != 200:
             self.error = response.status_code
@@ -83,7 +85,7 @@ class BooksImporterApi:
             len(loads(response.text).get('items'))
         except:
             raise NoDataApiError('no records from that phrase please try again')
-        self.data = response.json()
+        return response.json()
 
     def data_items_exist_checker(self):
         counter = 0

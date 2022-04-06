@@ -30,3 +30,6 @@ class Book(models.Model):
         return reverse("booklist:book_detail", kwargs={"id": self.id})
 
 
+
+
+
